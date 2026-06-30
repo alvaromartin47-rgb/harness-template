@@ -59,6 +59,26 @@ copy() { # copy SRC DST  — no pisa salvo --force
   say "+ ${dst#$TARGET/}"
 }
 
+# merge_into SRC DST — fusiona el bloque del harness preservando lo existente
+# (p. ej. el CLAUDE.md/AGENTS.md que crea spec-kit). Idempotente.
+HB="<!-- harness:begin (bloque gestionado — no editar a mano) -->"
+HE="<!-- harness:end -->"
+merge_into() {
+  local src="$1" dst="$2"
+  mkdir -p "$(dirname "$dst")"
+  if [ -e "$dst" ] && grep -qF "$HB" "$dst"; then
+    python3 - "$dst" "$HB" "$HE" <<'PY'
+import sys, re
+f, b, e = sys.argv[1], sys.argv[2], sys.argv[3]
+t = open(f, encoding="utf-8").read()
+t = re.sub(re.escape(b)+r".*?"+re.escape(e), "", t, flags=re.S).rstrip()
+open(f, "w", encoding="utf-8").write(t + ("\n" if t else ""))
+PY
+  fi
+  { [ -s "$dst" ] && echo ""; echo "$HB"; cat "$src"; echo "$HE"; } >> "$dst"
+  say "+ ${dst#$TARGET/} (merge)"
+}
+
 say "Instalando arnés en: $TARGET"
 mkdir -p "$TARGET"
 
@@ -92,10 +112,15 @@ fi
 # 1. Núcleo agnóstico (template/) → destino, archivo por archivo
 ( cd "$SCRIPT_DIR/template" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do
   rel="${rel#./}"
+  # AGENTS.md se fusiona aparte (spec-kit puede haber creado uno propio)
+  [ "$rel" = "AGENTS.md" ] && continue
   # En modo spec-kit no se instala el backlog built-in
   [ "$rel" = "feature_list.json" ] && [ "$SDD_MODE" = "speckit" ] && continue
   copy "$SCRIPT_DIR/template/$rel" "$TARGET/$rel"
 done
+
+# AGENTS.md: fuente de verdad del harness, fusionada preservando lo de spec-kit
+merge_into "$SCRIPT_DIR/template/AGENTS.md" "$TARGET/AGENTS.md"
 
 chmod +x "$TARGET/init.sh" 2>/dev/null || true
 chmod +x "$TARGET/.githooks/"* 2>/dev/null || true
@@ -143,7 +168,7 @@ IFS=',' read -ra LIST <<< "$AGENTS"
 for a in "${LIST[@]}"; do
   case "$a" in
     claude)
-      copy "$SCRIPT_DIR/adapters/claude/CLAUDE.md" "$TARGET/CLAUDE.md"
+      merge_into "$SCRIPT_DIR/adapters/claude/CLAUDE.md" "$TARGET/CLAUDE.md"
       ( cd "$SCRIPT_DIR/adapters/claude/.claude" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do
         rel="${rel#./}"
         copy "$SCRIPT_DIR/adapters/claude/.claude/$rel" "$TARGET/.claude/$rel"
@@ -153,7 +178,7 @@ for a in "${LIST[@]}"; do
     codex)
       say "codex: usa AGENTS.md de la raíz de forma nativa (sin archivos extra)";;
     gemini)
-      copy "$SCRIPT_DIR/adapters/gemini/GEMINI.md" "$TARGET/GEMINI.md"
+      merge_into "$SCRIPT_DIR/adapters/gemini/GEMINI.md" "$TARGET/GEMINI.md"
       EXCLUDES+=("/GEMINI.md");;
     cursor)
       ( cd "$SCRIPT_DIR/adapters/cursor/.cursor" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do

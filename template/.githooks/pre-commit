@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# pre-commit — valida los invariantes del arnés (rápido, sin correr tests).
+# Enforcement agnóstico del agente: corre lo edite quien lo edite.
+# Saltar (emergencia): git commit --no-verify
+
+set -u
+if ! command -v python3 >/dev/null 2>&1; then exit 0; fi
+[ -f feature_list.json ] || exit 0
+
+python3 - <<'PY'
+import json, os, sys
+try:
+    data = json.load(open("feature_list.json"))
+    valid = {"pending", "spec_ready", "in_progress", "done", "blocked"}
+    features = data.get("features", [])
+    inprog = [f for f in features if f.get("status") == "in_progress"]
+    if len(inprog) > 1:
+        print(f"[pre-commit] BLOQUEADO: {len(inprog)} features en in_progress (máx 1)")
+        sys.exit(1)
+    req = {"spec_ready", "in_progress", "done"}
+    for f in features:
+        if f.get("status") not in valid:
+            print(f"[pre-commit] BLOQUEADO: estado inválido en {f.get('id')}: {f.get('status')}")
+            sys.exit(1)
+        if f.get("sdd") and f.get("status") in req:
+            d = os.path.join("specs", f["name"])
+            for fn in ("requirements.md", "design.md", "tasks.md"):
+                if not os.path.isfile(os.path.join(d, fn)):
+                    print(f"[pre-commit] BLOQUEADO: {f['name']} en {f['status']} sin {d}/{fn}")
+                    sys.exit(1)
+except Exception as e:
+    print(f"[pre-commit] BLOQUEADO: feature_list.json inválido: {e}")
+    sys.exit(1)
+PY

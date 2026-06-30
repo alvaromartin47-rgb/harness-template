@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# pre-push — verificación completa antes de publicar: corre ./init.sh.
+# Enforcement agnóstico del agente. Saltar (emergencia): git push --no-verify
+
+set -u
+if [ -x ./init.sh ]; then
+  if ! ./init.sh; then
+    echo "[pre-push] BLOQUEADO: ./init.sh falló. No se publica hasta verde."
+    exit 1
+  fi
+else
+  echo "[pre-push] aviso: ./init.sh no encontrado o no ejecutable; se omite."
+fi

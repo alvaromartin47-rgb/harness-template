@@ -6,6 +6,8 @@
 #
 #   --agents   Adaptadores a instalar (coma-separados): claude,codex,gemini,cursor
 #              Default: claude,codex
+#   --profile  Contexto del proyecto (define el flujo de Git): personal|comafi|fiuba
+#              Default: personal
 #   --dir      Directorio destino. Default: directorio actual ($PWD)
 #   --force    Sobrescribe archivos existentes (por defecto NO se pisan)
 #   --pointer  Además, añade el gatillo "configura mi harness" a las configs
@@ -19,6 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 AGENTS="claude,codex"
 TARGET="$PWD"
+PROFILE="personal"
 FORCE=0
 POINTER=0
 
@@ -26,12 +29,17 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --agents) AGENTS="$2"; shift 2;;
     --dir)    TARGET="$2"; shift 2;;
+    --profile) PROFILE="$2"; shift 2;;
     --force)  FORCE=1; shift;;
     --pointer) POINTER=1; shift;;
-    -h|--help) sed -n '2,18p' "$0"; exit 0;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0;;
     *) echo "Opción desconocida: $1"; exit 1;;
   esac
 done
+
+if [ ! -f "$SCRIPT_DIR/profiles/$PROFILE/git-workflow.md" ]; then
+  echo "Perfil desconocido: $PROFILE (válidos: personal, comafi, fiuba)"; exit 1
+fi
 
 say() { printf "\033[0;36m[harness]\033[0m %s\n" "$1"; }
 warn() { printf "\033[0;33m[harness]\033[0m %s\n" "$1"; }
@@ -58,6 +66,10 @@ done
 
 chmod +x "$TARGET/init.sh" 2>/dev/null || true
 chmod +x "$TARGET/.githooks/"* 2>/dev/null || true
+
+# 1b. Flujo de Git según el perfil del proyecto
+copy "$SCRIPT_DIR/profiles/$PROFILE/git-workflow.md" "$TARGET/docs/git-workflow.md"
+say "perfil de Git: $PROFILE"
 
 # 2. Adaptadores por agente
 IFS=',' read -ra LIST <<< "$AGENTS"

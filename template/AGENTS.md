@@ -31,6 +31,7 @@
 | `docs/principles.md`         | Principios de ingeniería no negociables (clean code, POO, SOLID, pragmatismo) | Antes de escribir código |
 | `docs/architecture.md`       | Arquitectura del proyecto (greenfield vs brownfield) y estándar de calidad  | Antes de implementar |
 | `docs/conventions.md`        | Reglas de estilo, nombres, estructura                                       | Antes de escribir código |
+| `docs/git-workflow.md`       | Flujo de Git del proyecto (branches, commits, PRs) según el perfil          | Antes de crear ramas, commitear o mergear |
 | `docs/specs.md`              | Proceso SDD: EARS notation, los 3 archivos, puerta de aprobación humana     | Antes de redactar o leer un spec |
 | `docs/verification.md`       | Cómo verificar que tu trabajo funciona (incluye trazabilidad requirements)  | Antes de declarar una tarea como `done` |
 | `CHECKPOINTS.md`             | Criterios objetivos de "estado final correcto"                              | Para auto-evaluarte |

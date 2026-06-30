@@ -23,13 +23,18 @@ $MARK_BEGIN
 ## Gatillo: "configura mi harness"
 
 Cuando el usuario diga **"configura mi harness"** (o equivalente) en un
-proyecto, monta el arnés Spec Driven Development clonando la plantilla y
-ejecutando su instalador en el directorio del proyecto actual:
+proyecto:
+
+1. **Preguntá el perfil del proyecto**: \`personal\`, \`comafi\` (banco) o
+   \`fiuba\`. Define el flujo de Git (branches, commits, PRs). Si el usuario
+   no lo aclara, preguntá antes de instalar.
+2. Cloná la plantilla y ejecutá el instalador en el directorio del proyecto,
+   pasando el perfil elegido:
 
 \`\`\`bash
 rm -rf /tmp/harness-template \\
   && git clone --depth 1 $REPO_URL /tmp/harness-template \\
-  && bash /tmp/harness-template/install.sh
+  && bash /tmp/harness-template/install.sh --profile <personal|comafi|fiuba>
 \`\`\`
 
 Luego sigue \`AGENTS.md\` del proyecto. La fuente de verdad del proceso vive

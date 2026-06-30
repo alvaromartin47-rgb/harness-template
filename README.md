@@ -22,10 +22,15 @@ rm -rf /tmp/harness-template \
   && bash /tmp/harness-template/install.sh
 ```
 
-Opciones: `--agents claude,codex,gemini,cursor` · `--dir <ruta>` · `--force` · `--pointer`
+Opciones: `--agents claude,codex,gemini,cursor` · `--profile personal|comafi|fiuba` · `--dir <ruta>` · `--force` · `--pointer`
 
 Adaptadores disponibles: `claude` (CLAUDE.md + subagentes), `codex` (usa
 `AGENTS.md` nativo), `gemini` (GEMINI.md), `cursor` (`.cursor/rules/`).
+
+**Perfiles** (definen el flujo de Git en `docs/git-workflow.md`):
+- `personal` (default) — solo `main` + `develop`; más ramas a pedido.
+- `comafi` — `feature/CAL-XXX` desde `develop`, `release/*`, `master`; pipeline CDK.
+- `fiuba` — `main`/`dev` + `feature|bugfix|hotfix|refactor/<n>`; Conventional Commits.
 
 ## Gatillo "configura mi harness"
 

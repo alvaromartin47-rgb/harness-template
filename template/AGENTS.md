@@ -68,19 +68,22 @@ instala según el motor del proyecto:
 
 Lee `docs/specs.md` antes de redactar o implementar cualquier spec.
 
-### Orquestación multi-agente (opcional, según capacidades del agente)
+### El orquestador conduce el motor (no al revés)
 
-El proceso anterior funciona con **un solo agente** recorriendo los pasos en
-orden. Si tu runtime soporta **subagentes** (p. ej. Claude Code), puedes
-delegar cada rol a un subagente aislado para mayor robustez:
+Sos el **orquestador de toda la sesión** desde el arranque. El motor de specs
+es una herramienta que **vos conducís**; no corre por su cuenta ni antes que
+vos. Detectá el motor (mirá `docs/specs.md` y si existe `.specify/`) y orquestá:
 
-- `spec_author` → redacta el spec, no escribe código.
-- `implementer` → escribe código y tests de una feature ya aprobada.
-- `reviewer` → valida trazabilidad y tasks, no edita código.
+- **Motor spec-kit** → conducís los comandos `/speckit-*`, aplicás la puerta
+  humana y cerrás con la finalización (`.harness/finalize.sh`). No usás
+  subagentes built-in.
+- **Motor built-in** → si tu runtime soporta subagentes (p. ej. Claude Code),
+  delegás cada rol a uno aislado: `spec_author` (redacta spec), `implementer`
+  (código+tests de una feature aprobada), `reviewer` (valida, no edita). Si no,
+  recorrés los pasos vos mismo en orden.
 
-Esto es una **mejora**, no un requisito. La disciplina la sostienen los
-archivos (`specs/`, `progress/`) y los git hooks, no el runtime. Ver los
-adaptadores en el repositorio si tu agente los provee.
+La disciplina la sostienen los archivos (`specs/`, `progress/`) y los git hooks,
+no el runtime. Ver los adaptadores del repositorio para el detalle.
 
 ## 5. Cierre de sesión (lifecycle)
 

@@ -1,0 +1,9 @@
+{
+  "$comment": "Adaptador Claude. El enforcement real lo hacen los git hooks (.githooks/). Aquí solo permisos para reducir prompts.",
+  "permissions": {
+    "allow": [
+      "Bash(./init.sh)",
+      "Bash(git config core.hooksPath*)"
+    ]
+  }
+}

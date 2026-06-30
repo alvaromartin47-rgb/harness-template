@@ -1,0 +1,9 @@
+# Este repo ES la plantilla del harness: necesita versionar los archivos que
+# el gitignore global del usuario ignora (CLAUDE.md, .claude/, etc.).
+!CLAUDE.md
+!AGENTS.md
+!GEMINI.md
+!.claude/
+!.claude/**
+!.cursor/
+!.cursor/**

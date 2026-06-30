@@ -1,14 +1,30 @@
 # Convenciones de código
 
-> RELLENA ESTE ARCHIVO. Homogeneidad extrema: un agente predice mejor cuando
-> el repositorio se parece a sí mismo en todas partes.
+> Homogeneidad extrema: un agente (y un humano) predicen mejor cuando el
+> repositorio se parece a sí mismo en todas partes. Los principios de fondo
+> están en `principles.md`; acá van las reglas concretas de forma.
 
-## Estilo
+## Reglas transversales (aplican a cualquier proyecto)
 
-<!-- Lenguaje y versión, formateador, longitud de línea, comillas, etc. -->
+- **Idioma del código:** identificadores, métodos, clases y variables en
+  español. (Los nombres de librerías y rutas siguen en inglés.)
+- **Comentarios:** en español, breves (1-2 líneas), solo cuando el código no
+  se entiende por sí solo. Sin comentarios obvios, redundantes ni referencias
+  a estados históricos. Tono natural, como los escribiría un dev del equipo.
+- **Tipado estricto:** sin escapes de tipo. Una sola fuente de verdad para los
+  tipos del contrato; validar en el borde lo que viene de afuera.
+- **Errores:** nombrados y centralizados; no se hardcodean strings de mensajes
+  dispersos por el código.
+- **Sin secretos en el repo:** credenciales fuera del código y de archivos
+  versionados.
+
+## Estilo (específico del lenguaje/stack)
+
+<!-- RELLENA según el stack: versión del lenguaje, formateador, longitud de
+línea, comillas, orden de imports, etc. -->
 
 - _Lenguaje / versión:_
-- _Formato:_
+- _Formato / linter:_
 - _Imports:_
 
 ## Nombres
@@ -23,15 +39,13 @@
 
 ## Tests
 
-- _Un archivo de test por módulo / unidad lógica._
-- _Cómo se aíslan (tmp dirs reales, no mocks de fs salvo necesidad)._
-- _Nombres de test descriptivos._
+- Un archivo de test por unidad lógica.
+- Se testea comportamiento (entrada→salida), no estructura interna.
+- Dobles inyectados por constructor; se mockea en los bordes, no el dominio.
+- Nombres de test declarativos (evitar el prefijo "debe": "retorna X cuando…").
+- El nivel de testing del proyecto se define en `verification.md`.
 
 ## Manejo de errores
 
-<!-- Excepciones del dominio, cómo se presentan al usuario, exit codes. -->
-
-## Comentarios
-
-Por defecto **no** se escriben. Solo cuando explican un *por qué* no obvio.
-Los nombres deben hacer el resto.
+<!-- RELLENA: jerarquía de errores del dominio, cómo se presentan al usuario,
+códigos de salida / status. -->

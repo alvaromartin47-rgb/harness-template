@@ -3,14 +3,28 @@
 > Regla de oro: **el agente no dice "funciona", lo demuestra**.
 > Toda feature termina con evidencia ejecutable, no con afirmaciones.
 
+## Principio: tests no negociables, nivel según el proyecto
+
+**Ningún cambio se cierra sin tests** que ejerciten su comportamiento (ver
+`principles.md` §7). Lo que **se decide por proyecto** es el *nivel* donde vive
+la red de seguridad, según dónde estén el valor y el riesgo:
+
+- **TDD estricto + unit por responsabilidad** cuando el valor está en lógica de
+  dominio rica (orquestación, reglas de negocio). Red-Green-Refactor.
+- **Integración + e2e contra dependencias reales** cuando el valor está en la
+  interacción con infraestructura (DB, APIs); los unit pasan a ser opcionales.
+- Lo habitual es una combinación. **Documenta abajo la estrategia elegida.**
+
+> Estrategia de testing de ESTE proyecto: _RELLENA_
+
 ## Niveles de verificación
 
 ### Nivel 1 — Tests automáticos (obligatorio)
 
-Toda función pública tiene al menos un test que:
+Toda unidad con comportamiento tiene al menos un test que:
 
 1. Cubre el camino feliz.
-2. Cubre al menos un camino de error si la función puede fallar.
+2. Cubre al menos un camino de error si puede fallar.
 
 Comando: el configurado en `init.sh` (`TEST_CMD`).
 

@@ -28,7 +28,8 @@
 | `progress/current.md`        | Estado de la sesión actual                                                  | Siempre, al empezar |
 | `progress/history.md`        | Bitácora append-only de sesiones anteriores                                 | Si necesitas contexto histórico |
 | `specs/<feature>/`           | `requirements.md` + `design.md` + `tasks.md`                               | Antes de implementar cualquier feature con `"sdd": true` |
-| `docs/architecture.md`       | Qué significa "hacer un buen trabajo" en este proyecto                      | Antes de implementar |
+| `docs/principles.md`         | Principios de ingeniería no negociables (clean code, POO, SOLID, pragmatismo) | Antes de escribir código |
+| `docs/architecture.md`       | Arquitectura del proyecto (greenfield vs brownfield) y estándar de calidad  | Antes de implementar |
 | `docs/conventions.md`        | Reglas de estilo, nombres, estructura                                       | Antes de escribir código |
 | `docs/specs.md`              | Proceso SDD: EARS notation, los 3 archivos, puerta de aprobación humana     | Antes de redactar o leer un spec |
 | `docs/verification.md`       | Cómo verificar que tu trabajo funciona (incluye trazabilidad requirements)  | Antes de declarar una tarea como `done` |

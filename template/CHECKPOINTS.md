@@ -7,7 +7,7 @@
 ## C1 — El arnés está completo
 
 - [ ] Existen los archivos base: `AGENTS.md`, `init.sh`, `feature_list.json`, `progress/current.md`.
-- [ ] Existen los docs: `docs/architecture.md`, `docs/conventions.md`, `docs/specs.md`, `docs/verification.md`.
+- [ ] Existen los docs: `docs/principles.md`, `docs/architecture.md`, `docs/conventions.md`, `docs/specs.md`, `docs/verification.md`.
 - [ ] `./init.sh` termina con exit code 0.
 
 ## C2 — El estado es coherente

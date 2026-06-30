@@ -4,7 +4,8 @@
 # Uso:
 #   bash install.sh [--agents claude,codex] [--dir TARGET] [--force] [--pointer]
 #
-#   --agents   Adaptadores a instalar (coma-separados). Default: claude,codex
+#   --agents   Adaptadores a instalar (coma-separados): claude,codex,gemini,cursor
+#              Default: claude,codex
 #   --dir      Directorio destino. Default: directorio actual ($PWD)
 #   --force    Sobrescribe archivos existentes (por defecto NO se pisan)
 #   --pointer  Además, añade el gatillo "configura mi harness" a las configs
@@ -71,6 +72,14 @@ for a in "${LIST[@]}"; do
       ;;
     codex)
       say "codex: usa AGENTS.md de la raíz de forma nativa (sin archivos extra)";;
+    gemini)
+      copy "$SCRIPT_DIR/adapters/gemini/GEMINI.md" "$TARGET/GEMINI.md";;
+    cursor)
+      ( cd "$SCRIPT_DIR/adapters/cursor/.cursor" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do
+        rel="${rel#./}"
+        copy "$SCRIPT_DIR/adapters/cursor/.cursor/$rel" "$TARGET/.cursor/$rel"
+      done
+      ;;
     *) warn "adaptador desconocido: $a (se omite)";;
   esac
 done

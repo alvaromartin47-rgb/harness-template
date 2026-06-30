@@ -22,7 +22,10 @@ rm -rf /tmp/harness-template \
   && bash /tmp/harness-template/install.sh
 ```
 
-Opciones: `--agents claude,codex` · `--dir <ruta>` · `--force` · `--pointer`
+Opciones: `--agents claude,codex,gemini,cursor` · `--dir <ruta>` · `--force` · `--pointer`
+
+Adaptadores disponibles: `claude` (CLAUDE.md + subagentes), `codex` (usa
+`AGENTS.md` nativo), `gemini` (GEMINI.md), `cursor` (`.cursor/rules/`).
 
 ## Gatillo "configura mi harness"
 

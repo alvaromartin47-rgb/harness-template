@@ -1,0 +1,29 @@
+---
+description: Arnés Spec Driven Development — obedece AGENTS.md
+alwaysApply: true
+---
+
+# Arnés SDD (adaptador Cursor)
+
+Este repositorio trabaja bajo un arnés **Spec Driven Development**. La fuente
+de verdad del proceso es **`AGENTS.md`** en la raíz del repo: léelo y
+obedécelo antes de cualquier tarea de código.
+
+## Antes de tocar código
+
+1. Lee `AGENTS.md`, `feature_list.json` y `progress/current.md`.
+2. Ejecuta `./init.sh`. Si falla, para y reporta.
+
+## Flujo (un solo agente, secuencial)
+
+```
+pending → [spec] → spec_ready → ⏸ HUMANO APRUEBA → in_progress → [implementar → revisar] → done
+```
+
+- No saltes la fase de spec ni la puerta de aprobación humana.
+- No marques `done` sin `./init.sh` en verde.
+- Una sola feature a la vez.
+- Escribe resultados en archivos (`specs/<name>/`, `progress/`), no solo en chat.
+
+El enforcement lo dan los **git hooks** (`.githooks/`) + `./init.sh`, no esta
+regla. Consulta `docs/specs.md` para EARS y trazabilidad.

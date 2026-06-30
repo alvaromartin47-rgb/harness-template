@@ -58,4 +58,7 @@ PY
 
 add_pointer "$HOME/.claude/CLAUDE.md"
 add_pointer "$HOME/.codex/AGENTS.md"
+add_pointer "$HOME/.gemini/GEMINI.md"
 echo "[pointer] gatillo apuntando a: $REPO_URL"
+echo "[pointer] nota: Cursor no tiene config global por archivo; su adaptador"
+echo "[pointer]       se instala a nivel de proyecto (install.sh --agents cursor)."

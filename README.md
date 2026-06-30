@@ -45,6 +45,20 @@ Esto añade un bloque idempotente a `~/.claude/CLAUDE.md` y `~/.codex/AGENTS.md`
 que enseña al agente a clonar este repo y correr `install.sh`. A partir de
 ahí, decir **"configura mi harness"** en un proyecto monta todo.
 
+## Sin rastros en git
+
+El arnés es tu andamiaje personal de trabajo: **no debe quedar versionado en el
+proyecto**. El instalador agrega todas sus rutas a **`.git/info/exclude`**
+(ignore local, nunca versionado), así que:
+
+- `git status` no muestra ningún archivo del arnés (AGENTS.md, CLAUDE.md,
+  `.claude/`, `docs/`, `progress/`, `specs/`, etc.).
+- **No se toca el `.gitignore`** del proyecto → no queda ni un diff que delate
+  el uso de herramientas de IA.
+- El código real del proyecto sigue siendo visible y versionable con normalidad.
+- Los git hooks funcionan igual (`core.hooksPath` vive en `.git/config`, que
+  nunca se versiona).
+
 ## Qué instala
 
 ```

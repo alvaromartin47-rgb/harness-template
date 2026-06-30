@@ -2,7 +2,7 @@
 # install.sh — Monta el arnés Spec Driven Development en el proyecto actual.
 #
 # Uso:
-#   bash install.sh [--agents claude,codex] [--dir TARGET] [--force] [--pointer]
+#   bash install.sh [--agents ...] [--profile ...] [--dir TARGET] [--force] [--pointer]
 #
 #   --agents   Adaptadores a instalar (coma-separados): claude,codex,gemini,cursor
 #              Default: claude,codex
@@ -71,6 +71,15 @@ chmod +x "$TARGET/.githooks/"* 2>/dev/null || true
 copy "$SCRIPT_DIR/profiles/$PROFILE/git-workflow.md" "$TARGET/docs/git-workflow.md"
 say "perfil de Git: $PROFILE"
 
+# Rutas del arnés a ocultar de git (sin rastros). Se acumulan y se vuelcan a
+# .git/info/exclude (local, nunca versionado).
+EXCLUDES=(
+  "/AGENTS.md" "/CHECKPOINTS.md" "/feature_list.json" "/init.sh"
+  "/.githooks/" "/progress/" "/specs/"
+  "/docs/principles.md" "/docs/architecture.md" "/docs/conventions.md"
+  "/docs/git-workflow.md" "/docs/specs.md" "/docs/verification.md"
+)
+
 # 2. Adaptadores por agente
 IFS=',' read -ra LIST <<< "$AGENTS"
 for a in "${LIST[@]}"; do
@@ -81,28 +90,52 @@ for a in "${LIST[@]}"; do
         rel="${rel#./}"
         copy "$SCRIPT_DIR/adapters/claude/.claude/$rel" "$TARGET/.claude/$rel"
       done
+      EXCLUDES+=("/CLAUDE.md" "/.claude/")
       ;;
     codex)
       say "codex: usa AGENTS.md de la raíz de forma nativa (sin archivos extra)";;
     gemini)
-      copy "$SCRIPT_DIR/adapters/gemini/GEMINI.md" "$TARGET/GEMINI.md";;
+      copy "$SCRIPT_DIR/adapters/gemini/GEMINI.md" "$TARGET/GEMINI.md"
+      EXCLUDES+=("/GEMINI.md");;
     cursor)
       ( cd "$SCRIPT_DIR/adapters/cursor/.cursor" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do
         rel="${rel#./}"
         copy "$SCRIPT_DIR/adapters/cursor/.cursor/$rel" "$TARGET/.cursor/$rel"
       done
-      ;;
+      EXCLUDES+=("/.cursor/");;
     *) warn "adaptador desconocido: $a (se omite)";;
   esac
 done
 
-# 3. Git hooks (enforcement agnóstico)
+# 3. Git hooks (enforcement) + ocultar todo rastro del arnés
 if [ -d "$TARGET/.git" ]; then
   ( cd "$TARGET" && git config core.hooksPath .githooks )
   say "git hooks activados (core.hooksPath = .githooks)"
+
+  # Sin rastros: las rutas del arnés se ignoran vía .git/info/exclude (local,
+  # nunca versionado). No se toca .gitignore, así que no queda diff alguno.
+  EXDIR="$TARGET/.git/info"; EXFILE="$EXDIR/exclude"
+  mkdir -p "$EXDIR"; touch "$EXFILE"
+  B="# >>> harness (sin rastros) — no versionar >>>"
+  E="# <<< harness (sin rastros) <<<"
+  if grep -qF "$B" "$EXFILE"; then
+    python3 - "$EXFILE" "$B" "$E" <<'PY'
+import sys, re
+f, b, e = sys.argv[1], sys.argv[2], sys.argv[3]
+t = open(f, encoding="utf-8").read()
+t = re.sub(re.escape(b)+r".*?"+re.escape(e), "", t, flags=re.S).rstrip()
+open(f, "w", encoding="utf-8").write(t + ("\n" if t else ""))
+PY
+  fi
+  {
+    echo "$B"
+    printf '%s\n' "${EXCLUDES[@]}" | sort -u
+    echo "$E"
+  } >> "$EXFILE"
+  say "rastros ocultos: ${#EXCLUDES[@]} rutas en .git/info/exclude (sin tocar .gitignore)"
 else
-  warn "El destino no es un repo git. Inicialízalo y activa los hooks:"
-  warn "  git init && git config core.hooksPath .githooks"
+  warn "El destino no es un repo git. Inicialízalo y reejecutá para ocultar rastros:"
+  warn "  git init && bash <ruta>/install.sh --profile $PROFILE"
 fi
 
 # 4. Pointer global opcional

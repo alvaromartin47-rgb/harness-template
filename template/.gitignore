@@ -1,9 +1,0 @@
-# Artefactos comunes — ajusta según el lenguaje del proyecto
-__pycache__/
-*.py[cod]
-.venv/
-node_modules/
-dist/
-build/
-*.tmp
-.DS_Store

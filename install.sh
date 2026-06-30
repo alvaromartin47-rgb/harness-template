@@ -8,6 +8,8 @@
 #              Default: claude,codex
 #   --profile  Contexto del proyecto (define el flujo de Git): personal|comafi|fiuba
 #              Default: personal
+#   --sdd      Motor de specs: speckit (detecta/instala) | builtin | auto (detecta, no instala)
+#              Default: speckit
 #   --dir      Directorio destino. Default: directorio actual ($PWD)
 #   --force    Sobrescribe archivos existentes (por defecto NO se pisan)
 #   --pointer  Además, añade el gatillo "configura mi harness" a las configs
@@ -22,6 +24,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENTS="claude,codex"
 TARGET="$PWD"
 PROFILE="personal"
+SDD="speckit"
 FORCE=0
 POINTER=0
 
@@ -30,9 +33,10 @@ while [ $# -gt 0 ]; do
     --agents) AGENTS="$2"; shift 2;;
     --dir)    TARGET="$2"; shift 2;;
     --profile) PROFILE="$2"; shift 2;;
+    --sdd)    SDD="$2"; shift 2;;
     --force)  FORCE=1; shift;;
     --pointer) POINTER=1; shift;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0;;
+    -h|--help) sed -n '2,22p' "$0"; exit 0;;
     *) echo "Opción desconocida: $1"; exit 1;;
   esac
 done
@@ -58,9 +62,38 @@ copy() { # copy SRC DST  — no pisa salvo --force
 say "Instalando arnés en: $TARGET"
 mkdir -p "$TARGET"
 
+# 0. Resolver el motor de specs (built-in vs spec-kit)
+PRIMARY_AGENT="${AGENTS%%,*}"
+case "$PRIMARY_AGENT" in
+  cursor) SK_INT="cursor-agent";;
+  claude|codex|gemini) SK_INT="$PRIMARY_AGENT";;
+  *) SK_INT="claude";;
+esac
+
+SDD_MODE="builtin"
+if [ "$SDD" = "builtin" ]; then
+  SDD_MODE="builtin"
+elif [ -d "$TARGET/.specify" ]; then
+  SDD_MODE="speckit"; say "spec-kit detectado (.specify/): se usa como motor de specs"
+elif [ "$SDD" = "speckit" ]; then
+  if command -v specify >/dev/null 2>&1; then
+    say "spec-kit ausente → inicializando (specify init --offline, integración $SK_INT)…"
+    if ( cd "$TARGET" && specify init --here --integration "$SK_INT" --no-git --force --offline >/dev/null 2>&1 ); then
+      SDD_MODE="speckit"; say "spec-kit inicializado"
+    else
+      warn "specify init falló → uso motor built-in"; SDD_MODE="builtin"
+    fi
+  else
+    warn "'specify' no instalado → uso motor built-in (instalá spec-kit y reejecutá si lo querés)"
+    SDD_MODE="builtin"
+  fi
+fi
+
 # 1. Núcleo agnóstico (template/) → destino, archivo por archivo
 ( cd "$SCRIPT_DIR/template" && find . -type f -print0 ) | while IFS= read -r -d '' rel; do
   rel="${rel#./}"
+  # En modo spec-kit no se instala el backlog built-in
+  [ "$rel" = "feature_list.json" ] && [ "$SDD_MODE" = "speckit" ] && continue
   copy "$SCRIPT_DIR/template/$rel" "$TARGET/$rel"
 done
 
@@ -75,10 +108,18 @@ say "perfil de Git: $PROFILE"
 # .git/info/exclude (local, nunca versionado).
 EXCLUDES=(
   "/AGENTS.md" "/CHECKPOINTS.md" "/feature_list.json" "/init.sh"
-  "/.githooks/" "/progress/" "/specs/"
+  "/.githooks/" "/progress/" "/specs/" "/.specify/"
   "/docs/principles.md" "/docs/architecture.md" "/docs/conventions.md"
   "/docs/git-workflow.md" "/docs/specs.md" "/docs/verification.md"
 )
+
+# Documento de SDD según el motor resuelto
+if [ "$SDD_MODE" = "speckit" ]; then
+  cp "$SCRIPT_DIR/sdd/speckit/specs.md" "$TARGET/docs/specs.md"
+  say "motor SDD: spec-kit (docs/specs.md → flujo /speckit-*)"
+else
+  say "motor SDD: built-in (feature_list.json + specs/)"
+fi
 
 # 2. Adaptadores por agente
 IFS=',' read -ra LIST <<< "$AGENTS"
@@ -145,7 +186,12 @@ fi
 
 echo ""
 say "Listo. Próximos pasos:"
-say "  1. Edita feature_list.json (project + tu primera feature real)."
-say "  2. Rellena docs/architecture.md y docs/conventions.md."
-say "  3. Ajusta TEST_CMD en init.sh si hace falta."
-say "  4. Ejecuta ./init.sh — debe terminar verde."
+if [ "$SDD_MODE" = "speckit" ]; then
+  say "  1. Definí los principios con /speckit-constitution (apóyate en docs/principles.md)."
+  say "  2. Empezá una feature con /speckit-specify."
+else
+  say "  1. Edita feature_list.json (project + tu primera feature real)."
+fi
+say "  · Rellena docs/architecture.md y docs/conventions.md."
+say "  · Ajusta TEST_CMD en init.sh si hace falta."
+say "  · Ejecuta ./init.sh — debe terminar verde."

@@ -32,6 +32,17 @@ Adaptadores disponibles: `claude` (CLAUDE.md + subagentes), `codex` (usa
 - `comafi` — `feature/CAL-XXX` desde `develop`, `release/*`, `master`; pipeline CDK.
 - `fiuba` — `main`/`dev` + `feature|bugfix|hotfix|refactor/<n>`; Conventional Commits.
 
+**Motor de specs** (`--sdd`, default `speckit`):
+- `speckit` — usa **spec-kit** como motor. Si el repo ya lo tiene (`.specify/`),
+  lo respeta; si no, lo inicializa (`specify init --offline`). `docs/specs.md`
+  apunta al flujo `/speckit-*`. No instala `feature_list.json`.
+- `builtin` — el SDD liviano del harness (tres archivos + `feature_list.json`),
+  sin herramientas externas.
+- `auto` — detecta spec-kit; si no está, usa `builtin` (no instala nada).
+
+El harness complementa a spec-kit con lo que éste no cubre: principios,
+flujo de Git por perfil, enforcement por git hooks, bitácora y cero rastros.
+
 ## Gatillo "configura mi harness"
 
 Para disparar la instalación con una frase desde cualquier agente, instala el

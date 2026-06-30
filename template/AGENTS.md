@@ -51,19 +51,22 @@
 
 ## 4. Flujo de trabajo (Spec Driven Development)
 
+Regla universal, sea cual sea el motor de specs:
+
 ```
-pending → [redactar spec] → spec_ready → ⏸ HUMANO APRUEBA → in_progress → [implementar → revisar] → done
+spec → ⏸ HUMANO APRUEBA → implementación → revisión → done
 ```
 
-1. Detecta la primera feature `pending` con `"sdd": true`.
-2. Redacta `specs/<name>/{requirements.md, design.md, tasks.md}` y cambia el
-   status a `spec_ready`. **NO toques código todavía.**
-3. **Pausa.** El humano lee el spec en `specs/<name>/` y aprueba (o pide cambios).
-4. Una vez aprobado, cambia el status a `in_progress` e implementa.
-5. Ejecuta las tasks de `tasks.md` una a una, marcándolas `[x]`.
-6. Verifica trazabilidad `R<n>` ↔ test y que todas las tasks están completas.
-7. Si todo pasa `./init.sh` en verde y la trazabilidad está cubierta, marca
-   `done` y mueve el resumen a `progress/history.md`.
+**No se toca código sin un spec aprobado por un humano.** El **flujo concreto**
+(estados, archivos y comandos) está en **`docs/specs.md`**, que el harness
+instala según el motor del proyecto:
+
+- **Motor built-in** → specs de tres archivos (`requirements`/`design`/`tasks`)
+  gestionados con `feature_list.json`. Ver `docs/specs.md`.
+- **Motor spec-kit** → flujo `/speckit-*` (`specify → plan → tasks → implement`).
+  Ver `docs/specs.md`.
+
+Lee `docs/specs.md` antes de redactar o implementar cualquier spec.
 
 ### Orquestación multi-agente (opcional, según capacidades del agente)
 

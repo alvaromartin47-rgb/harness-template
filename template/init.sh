@@ -35,13 +35,15 @@ autodetect_test_cmd() {
 }
 
 echo "── 1. Verificando archivos base del arnés ──────────────"
-for f in AGENTS.md feature_list.json progress/current.md docs/principles.md docs/architecture.md docs/conventions.md docs/git-workflow.md docs/specs.md docs/verification.md CHECKPOINTS.md; do
+for f in AGENTS.md progress/current.md docs/principles.md docs/architecture.md docs/conventions.md docs/git-workflow.md docs/specs.md docs/verification.md CHECKPOINTS.md; do
   if [ ! -f "$f" ]; then fail "Falta archivo base: $f"; EXIT_CODE=1; else ok "Existe $f"; fi
 done
 
 echo ""
 echo "── 2. Validando feature_list.json y specs ─────────────"
-if ! command -v python3 >/dev/null 2>&1; then
+if [ ! -f feature_list.json ]; then
+  ok "Sin feature_list.json (motor spec-kit): validación delegada a spec-kit"
+elif ! command -v python3 >/dev/null 2>&1; then
   warn "python3 no disponible: se omite la validación de feature_list.json"
 else
 python3 - <<'PY'

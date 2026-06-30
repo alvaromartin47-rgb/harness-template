@@ -6,13 +6,13 @@
 
 ## C1 — El arnés está completo
 
-- [ ] Existen los archivos base: `AGENTS.md`, `init.sh`, `feature_list.json`, `progress/current.md`.
+- [ ] Existen los archivos base: `AGENTS.md`, `init.sh`, `progress/current.md` (+ `feature_list.json` en modo built-in; en modo spec-kit lo reemplaza `.specify/`).
 - [ ] Existen los docs: `docs/principles.md`, `docs/architecture.md`, `docs/conventions.md`, `docs/specs.md`, `docs/verification.md`.
 - [ ] `./init.sh` termina con exit code 0.
 
 ## C2 — El estado es coherente
 
-- [ ] Como mucho una feature en `in_progress` en `feature_list.json`.
+- [ ] Como mucho una feature en `in_progress` en `feature_list.json` (modo built-in; en spec-kit el ciclo lo gobierna spec-kit).
 - [ ] Toda feature `done` tiene tests asociados que pasan.
 - [ ] `progress/current.md` está vacío o describe la sesión activa (sin basura de sesiones anteriores).
 

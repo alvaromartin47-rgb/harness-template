@@ -37,6 +37,36 @@ línea, comillas, orden de imports, etc. -->
 | Constantes              |                   |                       |
 | Privadas                |                   |                       |
 
+## Flujo de Git (branches, commits, PRs)
+
+Reglas que aplican siempre:
+
+- **Una feature, una branch.** Cada feature se trabaja en su propia rama
+  `feature/<descripcion>` (con prefijo de ticket si el equipo lo usa, ej.
+  `feature/CAL-123-...`), partiendo de la rama de integración del proyecto.
+- **Estado final = rama de integración.** Terminada la feature se mergea a la
+  rama de integración y se deja el repo posicionado allí; no se deja el repo
+  parado en una feature branch suelta.
+- **El merge se consulta con el desarrollador antes de ejecutarlo. Nunca
+  automático.** (Es una acción difícil de revertir; ver `principles.md` §3.)
+- **Las ramas que disparan pipeline/deploy se mantienen siempre desplegables.**
+- **Commits:** en español, concisos y enfocados en lo más importante; si hay
+  muchos cambios se sintetizan en un mensaje cohesivo en vez de listar cada
+  detalle. Sin mención a IA/asistencia automática.
+- **PRs:** en inglés, descripción concisa del QUÉ; se amplía solo si el cambio
+  es significativo.
+
+Específico del proyecto (RELLENA):
+
+<!-- - Rama de integración: develop | main | ...
+     - Ramas protegidas / que despliegan: develop, release/*, master | ...
+     - Prefijo de ticket en branch y commit: CAL-XXX, ME-XXX | ninguno
+     - Ambientes: sbx → dev → qa → prod | ... -->
+
+- _Rama de integración:_
+- _Ramas que despliegan:_
+- _Prefijo de ticket:_
+
 ## Tests
 
 - Un archivo de test por unidad lógica.

@@ -37,6 +37,30 @@ Skills opcionales: `/speckit-clarify` (de-riesgar antes de planear),
   - Bitácora de sesión: `progress/current.md` + `history.md`.
   - Cero rastros en git (spec-kit y harness van a `.git/info/exclude`).
 
+## Finalización de una feature (handoff spec-kit → harness)
+
+spec-kit trabaja **libre en su propia rama** (p.ej. `001-mi-feature`) y la deja
+terminada. **Al cerrar, manda el harness**: toma esa versión final y la integra
+con SUS convenciones de Git (las del perfil, `docs/git-workflow.md`).
+
+Procedimiento al terminar `/speckit-implement` y tener `./init.sh` en verde:
+
+1. **Verificá verde:** `./init.sh`.
+2. **Clon a la rama del perfil + tag** con el helper:
+   ```bash
+   .harness/finalize.sh <rama-perfil> --tag <tag>
+   # comafi: .harness/finalize.sh feature/CAL-1234 --tag CAL-1234
+   # fiuba:  .harness/finalize.sh feature/buscador
+   ```
+   Crea una rama con la convención del perfil clonando el estado final de
+   spec-kit (y opcionalmente la etiqueta). **No mergea.**
+3. **PR + merge según `docs/git-workflow.md`**: PR en inglés, merge a la rama de
+   integración (develop/dev), commits en español.
+4. **El merge se consulta antes de ejecutarlo. Nunca automático.**
+
+Así spec-kit no se entera de tus convenciones de ramas (hace lo suyo), y el
+harness se queda con la decisión final de cómo nombrar, etiquetar e integrar.
+
 ## Verificación
 
 Sigue valiendo `docs/verification.md` y `CHECKPOINTS.md`: tests no negociables

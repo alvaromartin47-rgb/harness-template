@@ -117,6 +117,23 @@ EXCLUDES=(
 if [ "$SDD_MODE" = "speckit" ]; then
   cp "$SCRIPT_DIR/sdd/speckit/specs.md" "$TARGET/docs/specs.md"
   say "motor SDD: spec-kit (docs/specs.md → flujo /speckit-*)"
+
+  # Sembrar la constitución con los principios del harness (NO destructivo:
+  # solo si sigue siendo la plantilla vacía de spec-kit).
+  CONST="$TARGET/.specify/memory/constitution.md"
+  if [ -f "$CONST" ] && grep -q "\[PRINCIPLE_1_NAME\]" "$CONST"; then
+    cp "$SCRIPT_DIR/sdd/speckit/constitution.seed.md" "$CONST"
+    say "constitución sembrada desde docs/principles.md (refiná con /speckit-constitution)"
+  elif [ -f "$CONST" ]; then
+    say "constitución existente respetada (no se toca)"
+  fi
+
+  # Helper de finalización (handoff spec-kit → harness)
+  mkdir -p "$TARGET/.harness"
+  cp "$SCRIPT_DIR/sdd/speckit/finalize.sh" "$TARGET/.harness/finalize.sh"
+  chmod +x "$TARGET/.harness/finalize.sh"
+  EXCLUDES+=("/.harness/")
+  say "handoff de finalización: .harness/finalize.sh"
 else
   say "motor SDD: built-in (feature_list.json + specs/)"
 fi
